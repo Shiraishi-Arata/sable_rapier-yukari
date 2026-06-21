@@ -266,13 +266,19 @@ impl SablePhysicsHooks {
         let mut env = current_step_vm
             .attach_current_thread_as_daemon()
             .expect("Failed to attach current thread to JVM for collision callback");
-        let result =
-            unsafe { env.call_method_unchecked(contact_events, method, ReturnType::Array, &args) }
-                .unwrap();
-        let arr = JDoubleArray::from(JObject::try_from(result).unwrap());
 
+        // Use a local frame to free local refs immediately — worker threads never
+        // return to Java, so without this every JNI call leaks a local reference.
         let mut velo_arr: [jdouble; 4] = [0.0, 0.0, 0.0, 0.0];
-        env.get_double_array_region(arr, 0, &mut velo_arr).unwrap();
+        env.with_local_frame(16, |env| -> Result<_, jni::errors::Error> {
+            let result = unsafe {
+                env.call_method_unchecked(contact_events, method, ReturnType::Array, &args)
+            }?;
+            let arr = JDoubleArray::from(JObject::try_from(result).unwrap());
+            env.get_double_array_region(&arr, 0, &mut velo_arr)?;
+            Ok(())
+        })
+        .expect("Failed to call collision callback");
 
         let velo = Vec3::new(
             velo_arr[0] as Real,
