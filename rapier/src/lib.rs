@@ -1367,7 +1367,7 @@ pub extern "system" fn JNI_OnLoad(
             v1nm!("teleportObject", "(JIDDDDDDD)V", crate::Java_dev_ryanhcode_sable_physics_impl_rapier_Rapier3D_teleportObject_v2),
             v1nm!("wakeUpObject", "(JI)V", crate::Java_dev_ryanhcode_sable_physics_impl_rapier_Rapier3D_wakeUpObject_v2),
             v1nm!("setMassProperties", "(JID[D[D)V", crate::Java_dev_ryanhcode_sable_physics_impl_rapier_Rapier3D_setMassProperties_v2),
-            v1nm!("changeBlock", "(JIII)V", crate::Java_dev_ryanhcode_sable_physics_impl_rapier_Rapier3D_changeBlock_v2),
+            v1nm!("changeBlock", "(JIIII)V", crate::Java_dev_ryanhcode_sable_physics_impl_rapier_Rapier3D_changeBlock_v2),
             v1nm!("addChunk", "(JIII[IZI)V", crate::Java_dev_ryanhcode_sable_physics_impl_rapier_Rapier3D_addChunk_v2),
             v1nm!("removeChunk", "(JIIIZ)V", crate::Java_dev_ryanhcode_sable_physics_impl_rapier_Rapier3D_removeChunk_v2),
             v1nm!("createSubLevel", "(JI[D)V", crate::Java_dev_ryanhcode_sable_physics_impl_rapier_Rapier3D_createSubLevel_v2),
