@@ -1376,7 +1376,7 @@ pub extern "system" fn JNI_OnLoad(
             v1nm!("removeBox", "(JI)V", crate::boxes::Java_dev_ryanhcode_sable_physics_impl_rapier_Rapier3D_removeBox_v2),
             v1nm!("createKinematicContraption", "(JII[D)V", crate::contraptions::Java_dev_ryanhcode_sable_physics_impl_rapier_Rapier3D_createKinematicContraption_v2),
             v1nm!("setKinematicContraptionTransform", "(JI[D[D[D)V", crate::contraptions::Java_dev_ryanhcode_sable_physics_impl_rapier_Rapier3D_setKinematicContraptionTransform_v2),
-            v1nm!("addKinematicContraptionChunkSection", "(JIII[I)V", crate::contraptions::Java_dev_ryanhcode_sable_physics_impl_rapier_Rapier3D_addKinematicContraptionChunkSection_v2),
+            v1nm!("addKinematicContraptionChunkSection", "(JIIII[I)V", crate::contraptions::Java_dev_ryanhcode_sable_physics_impl_rapier_Rapier3D_addKinematicContraptionChunkSection_v2),
             v1nm!("removeKinematicContraption", "(JI)V", crate::contraptions::Java_dev_ryanhcode_sable_physics_impl_rapier_Rapier3D_removeKinematicContraption_v2),
             v1nm!("setConstraintMotor", "(JJIDDDZD)V", crate::joints::Java_dev_ryanhcode_sable_physics_impl_rapier_Rapier3D_setConstraintMotor_v2),
             v1nm!("setConstraintLimit", "(JJIDD)V", crate::joints::Java_dev_ryanhcode_sable_physics_impl_rapier_Rapier3D_setConstraintLimit_v2),
