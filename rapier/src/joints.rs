@@ -140,7 +140,61 @@ crate::jni_scene_fn! {
 }
 
 #[unsafe(no_mangle)]
+fn set_constraint_limit_impl(scene: &PhysicsScene, joint_id: jlong, axis: jint, min: jdouble, max: jdouble) {
+    let sable_data = scene.sable_data.read().unwrap();
+    let mut sim_data = scene.sim_data.write().unwrap();
+
+    let Some(joint) = sable_data.joint_set.joints.get(&joint_id) else {
+        return;
+    };
+
+    let data = &mut sim_data
+        .impulse_joint_set
+        .get_mut(joint.handle, false)
+        .unwrap()
+        .data;
+
+    data.set_limits(AXES[axis as usize], [min as Real, max as Real]);
+}
+
+fn lock_constraint_axes_impl(scene: &PhysicsScene, joint_id: jlong, mask: jbyte) {
+    let sable_data = scene.sable_data.read().unwrap();
+    let mut sim_data = scene.sim_data.write().unwrap();
+
+    let Some(joint) = sable_data.joint_set.joints.get(&joint_id) else {
+        return;
+    };
+
+    let data = &mut sim_data
+        .impulse_joint_set
+        .get_mut(joint.handle, false)
+        .unwrap()
+        .data;
+
+    data.lock_axes(JointAxesMask::from_bits(mask as u8).expect("Invalid mask!"));
+}
+
+#[unsafe(no_mangle)]
 pub extern "system" fn Java_dev_ryanhcode_sable_physics_impl_rapier_Rapier3D_setConstraintLimit<
+    'local,
+>(
+    _env: JNIEnv<'local>,
+    _class: JClass<'local>,
+    scene_id: jint,
+    joint_id: jlong,
+    axis: jint,
+    min: jdouble,
+    max: jdouble,
+) {
+    let __scenes = crate::SCENES
+        .get_or_init(|| ::std::sync::RwLock::new(::std::collections::HashMap::new()));
+    let __guard = __scenes.read().unwrap();
+    let scene: &crate::scene::PhysicsScene = &*__guard.get(&(scene_id as i32)).unwrap();
+    set_constraint_limit_impl(scene, joint_id, axis, min, max);
+}
+
+#[unsafe(no_mangle)]
+pub extern "system" fn Java_dev_ryanhcode_sable_physics_impl_rapier_Rapier3D_setConstraintLimit_v2<
     'local,
 >(
     _env: JNIEnv<'local>,
@@ -151,22 +205,7 @@ pub extern "system" fn Java_dev_ryanhcode_sable_physics_impl_rapier_Rapier3D_set
     min: jdouble,
     max: jdouble,
 ) {
-    with_handle(handle, |scene| {
-        let sable_data = scene.sable_data.read().unwrap();
-        let mut sim_data = scene.sim_data.write().unwrap();
-
-        let Some(joint) = sable_data.joint_set.joints.get(&joint_id) else {
-            return;
-        };
-
-        let data = &mut sim_data
-            .impulse_joint_set
-            .get_mut(joint.handle, false)
-            .unwrap()
-            .data;
-
-        data.set_limits(AXES[axis as usize], [min as Real, max as Real]);
-    })
+    with_handle(handle, |scene| set_constraint_limit_impl(scene, joint_id, axis, min, max));
 }
 
 #[unsafe(no_mangle)]
@@ -175,26 +214,28 @@ pub extern "system" fn Java_dev_ryanhcode_sable_physics_impl_rapier_Rapier3D_loc
 >(
     _env: JNIEnv<'local>,
     _class: JClass<'local>,
+    scene_id: jint,
+    joint_id: jlong,
+    mask: jbyte,
+) {
+    let __scenes = crate::SCENES
+        .get_or_init(|| ::std::sync::RwLock::new(::std::collections::HashMap::new()));
+    let __guard = __scenes.read().unwrap();
+    let scene: &crate::scene::PhysicsScene = &*__guard.get(&(scene_id as i32)).unwrap();
+    lock_constraint_axes_impl(scene, joint_id, mask);
+}
+
+#[unsafe(no_mangle)]
+pub extern "system" fn Java_dev_ryanhcode_sable_physics_impl_rapier_Rapier3D_lockConstraintAxes_v2<
+    'local,
+>(
+    _env: JNIEnv<'local>,
+    _class: JClass<'local>,
     handle: jlong,
     joint_id: jlong,
     mask: jbyte,
 ) {
-    with_handle(handle, |scene| {
-        let sable_data = scene.sable_data.read().unwrap();
-        let mut sim_data = scene.sim_data.write().unwrap();
-
-        let Some(joint) = sable_data.joint_set.joints.get(&joint_id) else {
-            return;
-        };
-
-        let data = &mut sim_data
-            .impulse_joint_set
-            .get_mut(joint.handle, false)
-            .unwrap()
-            .data;
-
-        data.lock_axes(JointAxesMask::from_bits(mask as u8).expect("Invalid mask!"));
-    })
+    with_handle(handle, |scene| lock_constraint_axes_impl(scene, joint_id, mask));
 }
 
 crate::jni_scene_fn_ret! {
